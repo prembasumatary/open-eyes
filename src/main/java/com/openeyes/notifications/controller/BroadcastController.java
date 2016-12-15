@@ -3,6 +3,7 @@ package com.openeyes.notifications.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -32,18 +33,25 @@ public class BroadcastController {
 			+ "This is an automated call for 1JL Team."
 			+ "Please check servers and dashboard, we seem to have received some alerts. Thank you."+
 	"</Say></Response>";
-	
-	
+		
 	@RequestMapping(value = "/message/{mesg}", method = RequestMethod.GET)
     @ResponseBody
     public String sendMessage(@PathVariable String mesg) throws Exception {
     	
+		if(mesg.isEmpty()){
+			return "no message to send";
+		}
+		
 		if(!mesg.isEmpty()){
 			logger.info("Message received as " + mesg);
-			throw new Exception(mesg);
-		} else {
-			throw new Exception();
+			
+			DevOps [] devops = new NotifierService().getAllDevOps();
+	        for (DevOps devop : devops) {
+	            new Client().sendMessage(devop.getPhoneNumber(), mesg, StringUtils.EMPTY);
+	        }
 		}
+		
+		return mesg;
     }
 	
 	@RequestMapping(value = "/call/{mesg}", method = RequestMethod.GET)

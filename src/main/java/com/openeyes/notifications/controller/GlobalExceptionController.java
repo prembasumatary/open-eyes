@@ -6,10 +6,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.openeyes.notifications.domain.Client;
-import com.openeyes.notifications.domain.DevOps;
-import com.openeyes.notifications.service.NotifierService;
-
 @ControllerAdvice
 public class GlobalExceptionController {
 	
@@ -21,13 +17,6 @@ public class GlobalExceptionController {
     	
         String message = customMessage(ex.getMessage());
         logger.info("message to be sent as text - " + message);
-        String mediaUrl = "nothing in here";
-
-        // Send a message to the dev ops when something goes unexpectedly wrong.
-        DevOps [] devops = new NotifierService().getAllDevOps();
-        for (DevOps devop : devops) {
-            new Client().sendMessage(devop.getPhoneNumber(), message, mediaUrl);
-        }
 
         return message;
     }
